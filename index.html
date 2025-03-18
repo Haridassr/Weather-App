@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=search" />
+    <title>Weather App</title>
+    <style>
+        body {
+            background-image:url(./weather.jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .weather-app {
+            background: #ccc;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 320px;
+            text-align: center;
+        }
+
+        .weather-app input {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .weather-app button {
+            padding: 5px 20px;
+            background:tomato;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .weather-app .result {
+            margin-top: 20px;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="weather-app">
+        <h2>Weather App</h2>
+        <input type="text" id="cityInput" placeholder="Search City Name" />
+        <button id="getWeatherBtn"><span class="material-symbols-outlined">search</span></button>
+        <div class="result" id="weatherResult"></div>
+    </div>
+</body>
+<script>
+    const apiKey = '0f629ad158d225426dd8e5fb0a9a3cda';
+    document.getElementById('getWeatherBtn').addEventListener('click', function () {
+        const city = document.getElementById('cityInput').value.trim();
+        const resultDiv = document.getElementById('weatherResult');
+        resultDiv.innerHTML = '';
+
+        if (!city) {
+            resultDiv.innerHTML = '<p class="error">Please enter a city name</p>';
+            return;
+        }
+
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.cod && data.cod != 200) 
+                    {
+                    resultDiv.innerHTML = `<p class="error">${data.message}</p>`;
+                    return;
+                }
+
+                resultDiv.innerHTML = `
+                    <h3>${data.name}, ${data.sys.country}</h3>
+                    <p><b>Temperature:</b> ${data.main.temp} °C</p>
+                    <p><b>Weather:</b> ${data.weather[0].description}</p>
+                    <p><b>Humidity:</b> ${data.main.humidity}%</p>
+                    <p><b>Wind:</b> ${data.wind.speed} m/s</p>
+                `;
+            })
+            .catch(() => {
+                resultDiv.innerHTML = '<p class="error">Unable to fetch weather data.</p>';
+            });
+    });
+
+</script>
+</html>
